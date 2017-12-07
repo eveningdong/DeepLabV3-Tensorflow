@@ -1,0 +1,8 @@
+matplotlib==2.1.0
+numpy==1.13.3
+opencv-python==3.3.0.10
+scipy==1.0.0
+six==1.11.0
+tensorflow-gpu==1.2.0
+Cython==0.27.3
+Pillow==4.3.0
