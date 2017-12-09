@@ -69,10 +69,15 @@ docs/_build/
 target/
 
 # IPython Notebook
+*.ipynb
 .ipynb_checkpoints
 
 # pyenv
 .python-version
+
+# Numpy
+*.npy
+*.npz
 
 # celery beat schedule file
 celerybeat-schedule
@@ -96,3 +101,5 @@ output
 # Swap 
 *.swp
 *.swo
+
+snapshots

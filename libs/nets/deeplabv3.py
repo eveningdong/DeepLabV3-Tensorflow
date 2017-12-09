@@ -64,7 +64,7 @@ def bottleneck_hdc(inputs,
                                             output)
 
 def deeplabv3(inputs,
-              num_class,
+              num_classes,
               layer_depth=50,
               is_training=True):
   scope ='resnet{}'.format(layer_depth)
@@ -123,7 +123,7 @@ def deeplabv3(inputs,
 
             for i in range(3):
               with tf.variable_scope('unit_%d' % (i + 1), values=[net]):
-                net = bottleneck(net, depth=base_depth * 4, depth_bottleneck=base_depth, stride=1, rate=4)
+                net = bottleneck_hdc(net, depth=base_depth * 4, depth_bottleneck=base_depth, stride=1, rate=4)
             net = slim.utils.collect_named_outputs(end_points_collection, sc.name, net)
 
           with tf.variable_scope('block6', [net]) as sc:
@@ -131,7 +131,7 @@ def deeplabv3(inputs,
 
             for i in range(3):
               with tf.variable_scope('unit_%d' % (i + 1), values=[net]):
-                net = bottleneck(net, depth=base_depth * 4, depth_bottleneck=base_depth, stride=1, rate=8)
+                net = bottleneck_hdc(net, depth=base_depth * 4, depth_bottleneck=base_depth, stride=1, rate=8)
             net = slim.utils.collect_named_outputs(end_points_collection, sc.name, net)
 
           with tf.variable_scope('block7', [net]) as sc:
@@ -139,7 +139,7 @@ def deeplabv3(inputs,
 
             for i in range(3):
               with tf.variable_scope('unit_%d' % (i + 1), values=[net]):
-                net = bottleneck(net, depth=base_depth * 4, depth_bottleneck=base_depth, stride=1, rate=16)
+                net = bottleneck_hdc(net, depth=base_depth * 4, depth_bottleneck=base_depth, stride=1, rate=16)
             net = slim.utils.collect_named_outputs(end_points_collection, sc.name, net)
 
           with tf.variable_scope('aspp', [net]) as sc:
@@ -170,16 +170,18 @@ def deeplabv3(inputs,
             pooled = slim.utils.collect_named_outputs(end_points_collection, sc.name, pooled)
 
           with tf.variable_scope('fusion', [aspp, pooled]) as sc:
-            net = tf.concat([aspp, pooled], -1)
+            net = tf.concat([aspp, pooled], 3)
             net = slim.utils.collect_named_outputs(end_points_collection, sc.name, net)
+
             net = slim.conv2d(net, 256, [1,1], stride=1, scope='1x1conv')
             net = slim.utils.collect_named_outputs(end_points_collection, sc.name, net)
 
-          net = slim.conv2d(net, num_class, [1,1], stride=1, scope='logits')
+          net = slim.conv2d(net, num_classes, [1,1], stride=1, activation_fn=None, scope='logits')
           net = slim.utils.collect_named_outputs(end_points_collection, sc.name, net)
 
           end_points = slim.utils.convert_collection_to_dict(
               end_points_collection)
+
           return net, end_points
 
 if __name__ == "__main__":
