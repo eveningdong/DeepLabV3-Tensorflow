@@ -25,6 +25,6 @@ pip3 install -r requirements.txt
 
 ## Train
 1. Configurate `config.py`.
-2. Run `python3 convert_voc12.py`, this will generate a tfrecord file in i`$DATA_DIRECTORY/records`.
+2. Run `python3 convert_voc12.py`, this will generate a tfrecord file in `$DATA_DIRECTORY/records`.
 3. Run `python3 train_voc12.py`
 
