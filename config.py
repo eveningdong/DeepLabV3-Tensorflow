@@ -8,33 +8,36 @@ import numpy as np
 IMG_MEAN = np.array((104.00698793,116.66876762,122.67891434), dtype=np.float32)
 
 BATCH_SIZE = 4
+CKPT = 0
 DATA_DIRECTORY = '/storage/ndong/data/auto/VOC/VOCdevkit/VOC2012'
 DATA_NAME = 'VOC12'
 DATA_LIST_PATH = './libs/datasets/VOC12/trainval.txt'
 IGNORE_LABEL = 255
 INPUT_SIZE = 512
-LEARNING_RATE = 7e-3
+LEARNING_RATE = 1e-3
 MOMENTUM = 0.9
 NUM_CLASSES = 21
 NUM_LAYERS = 101
 NUM_STEPS = 300000
 POWER = 0.9
 RANDOM_SEED = 1234
-RESTORE_FROM = None
+RESTORE_FROM = './snapshots/'
 SAVE_NUM_IMAGES = 1
 SAVE_PRED_EVERY = 2000
 SNAPSHOT_DIR = './snapshots/'
 WEIGHT_DECAY = 1
 
 parser = argparse.ArgumentParser(description="DeepLabV3")
-parser.add_argument("--data-name", type=str, default=DATA_NAME,
-                    help="Name of the dataset.")
 parser.add_argument("--batch-size", type=int, default=BATCH_SIZE,
                     help="Number of images sent to the network in one step.")
+parser.add_argument("--ckpt", type=int, default=CKPT, 
+                    help="Checkpoint to restore.")
 parser.add_argument("--data-dir", type=str, default=DATA_DIRECTORY,
                     help="Path to the directory containing the PASCAL VOC dataset.")
 parser.add_argument("--data-list", type=str, default=DATA_LIST_PATH,
                     help="Path to the file listing the images in the dataset.")
+parser.add_argument("--data-name", type=str, default=DATA_NAME,
+                    help="Name of the dataset.")
 parser.add_argument("--ignore-label", type=int, default=IGNORE_LABEL,
                     help="The index of the label to ignore during the training.")
 parser.add_argument("--input-size", type=int, default=INPUT_SIZE,

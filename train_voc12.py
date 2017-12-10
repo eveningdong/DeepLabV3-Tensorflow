@@ -37,7 +37,7 @@ def save(saver, sess, logdir, step):
    saver.save(sess, checkpoint_path, global_step=step)
    print('The checkpoint has been created.')
 
-def load(saver, sess, ckpt_path):
+def load(saver, sess, ckpt_dir):
     '''Load trained weights.
     
     Args:
@@ -45,6 +45,11 @@ def load(saver, sess, ckpt_path):
       sess: TensorFlow session.
       ckpt_path: path to checkpoint file with parameters.
     ''' 
+    if args.ckpt == 0:
+        ckpt = tf.train.get_checkpoint_state(ckpt_dir)
+        ckpt_path = ckpt.model_checkpoint_path
+    else:
+        ckpt_path = ckpt_dir+'/model.ckpt-%i' % args.ckpt
     saver.restore(sess, ckpt_path)
     print("Restored model parameters from {}".format(ckpt_path))
 
@@ -123,7 +128,9 @@ def main():
     # Define loss and optimisation parameters.
     base_lr = tf.constant(args.learning_rate)
     step_ph = tf.placeholder(dtype=tf.float32, shape=())
-    learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
+    # learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
+    learning_rate = args.learning_rate
+    tf.summary.scalar('learning_rate', learning_rate)
     
     opt = tf.train.MomentumOptimizer(learning_rate, args.momentum)
 
