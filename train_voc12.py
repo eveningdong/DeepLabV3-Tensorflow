@@ -110,7 +110,7 @@ def main():
     
     # Processed predictions: for visualisation.
     raw_output_up = tf.image.resize_bilinear(raw_output, tf.shape(image_batch)[1:3])
-    raw_output_up = tf.argmax(raw_output_up, dimension=3)
+    raw_output_up = tf.argmax(raw_output_up, axis=3)
     pred = tf.expand_dims(raw_output_up, dim=3)
     
     # # Image summary.
