@@ -120,16 +120,14 @@ def main():
     
     # tf.summary.image('images', tf.concat(axis=2, values=[images_summary, labels_summary, preds_summary]), max_outputs=args.save_num_images) # Concatenate row-wise.
     summary_op = tf.summary.merge_all()
-    summary_writer = tf.summary.FileWriter(args.snapshot_dir,
-                                           graph=tf.get_default_graph())
-    
+
     global_step = slim.get_or_create_global_step()
 
     # Define loss and optimisation parameters.
     base_lr = tf.constant(args.learning_rate)
     step_ph = tf.placeholder(dtype=tf.float32, shape=())
     # learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
-    learning_rate = args.learning_rate
+    learning_rate = base_lr
     tf.summary.scalar('learning_rate', learning_rate)
     
     opt = tf.train.MomentumOptimizer(learning_rate, args.momentum)
@@ -160,13 +158,17 @@ def main():
     
     # Start queue threads.
     threads = tf.train.start_queue_runners(coord=coord, sess=sess)
-
+    
+    tf.get_default_graph().finalize()
+    summary_writer = tf.summary.FileWriter(args.snapshot_dir,
+                                           sess.graph)
+    
     # Iterate over training steps.
-    for step in range(args.num_steps):
+    for step in range(args.ckpt, args.num_steps):
     # for step in range(1):
         start_time = time.time()
         feed_dict = { step_ph : step }
-        if step % args.save_pred_every == 0:
+        if step % args.save_pred_every == 0 and step != args.ckpt:
             tot_loss_float, seg_loss_float, reg_loss_float, images, labels, preds, summary, mean_iou_float, _, _ = sess.run([total_loss, seg_loss, reg_loss, image_batch, label_batch, pred, summary_op,
                 mean_iou, update_mean_iou, train_op], feed_dict=feed_dict)
             summary_writer.add_summary(summary, step)

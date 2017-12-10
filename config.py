@@ -21,10 +21,10 @@ NUM_LAYERS = 101
 NUM_STEPS = 300000
 POWER = 0.9
 RANDOM_SEED = 1234
-RESTORE_FROM = './snapshots/'
+RESTORE_FROM = './snapshots'
 SAVE_NUM_IMAGES = 1
 SAVE_PRED_EVERY = 2000
-SNAPSHOT_DIR = './snapshots/'
+SNAPSHOT_DIR = './snapshots'
 WEIGHT_DECAY = 1
 
 parser = argparse.ArgumentParser(description="DeepLabV3")
