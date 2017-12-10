@@ -108,17 +108,6 @@ def main():
         args.num_classes)    
     tf.summary.scalar('accuracy/mean_iou', mean_iou)
     
-    # Processed predictions: for visualisation.
-    raw_output_up = tf.image.resize_bilinear(raw_output, tf.shape(image_batch)[1:3])
-    raw_output_up = tf.argmax(raw_output_up, axis=3)
-    pred = tf.expand_dims(raw_output_up, dim=3)
-    
-    # # Image summary.
-    # images_summary = tf.py_func(inv_preprocess, [image_batch, args.save_num_images, IMG_MEAN], tf.uint8)
-    # labels_summary = tf.py_func(decode_labels, [label_batch, args.save_num_images, args.num_classes], tf.uint8)
-    # preds_summary = tf.py_func(decode_labels, [pred, args.save_num_images, args.num_classes], tf.uint8)
-    
-    # tf.summary.image('images', tf.concat(axis=2, values=[images_summary, labels_summary, preds_summary]), max_outputs=args.save_num_images) # Concatenate row-wise.
     summary_op = tf.summary.merge_all()
 
     global_step = slim.get_or_create_global_step()
@@ -126,8 +115,8 @@ def main():
     # Define loss and optimisation parameters.
     base_lr = tf.constant(args.learning_rate)
     step_ph = tf.placeholder(dtype=tf.float32, shape=())
-    # learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
-    learning_rate = base_lr
+    learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
+    # learning_rate = base_lr
     tf.summary.scalar('learning_rate', learning_rate)
     
     opt = tf.train.MomentumOptimizer(learning_rate, args.momentum)
@@ -152,9 +141,9 @@ def main():
     saver = tf.train.Saver(var_list=tf.global_variables(), max_to_keep=20)
     
     # Load variables if the checkpoint is provided.
-    if args.restore_from is not None:
+    if args.ckpt > 0 or args.restore_from is not None:
         loader = tf.train.Saver(var_list=restore_var)
-        load(loader, sess, args.restore_from)
+        load(loader, sess, args.snapshot_dir)
     
     # Start queue threads.
     threads = tf.train.start_queue_runners(coord=coord, sess=sess)
@@ -168,7 +157,7 @@ def main():
     # for step in range(1):
         start_time = time.time()
         feed_dict = { step_ph : step }
-        if step % args.save_pred_every == 0 and step != args.ckpt:
+        if step % args.save_pred_every == 0 and step > args.ckpt:
             tot_loss_float, seg_loss_float, reg_loss_float, images, labels, preds, summary, mean_iou_float, _, _ = sess.run([total_loss, seg_loss, reg_loss, image_batch, label_batch, pred, summary_op,
                 mean_iou, update_mean_iou, train_op], feed_dict=feed_dict)
             summary_writer.add_summary(summary, step)
