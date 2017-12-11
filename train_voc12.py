@@ -117,7 +117,7 @@ def main():
     step_ph = tf.placeholder(dtype=tf.float32, shape=())
     learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
     # learning_rate = base_lr
-    tf.summary.scalar('learning_rate', learning_rate)
+    tf.summary.scalar('hyperparameters/learning_rate', learning_rate)
     
     opt = tf.train.MomentumOptimizer(learning_rate, args.momentum)
 
@@ -158,17 +158,17 @@ def main():
         start_time = time.time()
         feed_dict = { step_ph : step }
         if step % args.save_pred_every == 0 and step > args.ckpt:
-            tot_loss_float, seg_loss_float, reg_loss_float, images, labels, preds, summary, mean_iou_float, _, _ = sess.run([total_loss, seg_loss, reg_loss, image_batch, label_batch, pred, summary_op,
-                mean_iou, update_mean_iou, train_op], feed_dict=feed_dict)
+            tot_loss_float, seg_loss_float, reg_loss_float, images, labels, summary, mean_iou_float, _, _, lr_float = sess.run([total_loss,
+              seg_loss, reg_loss, image_batch, label_batch, summary_op,
+              mean_iou, update_mean_iou, train_op, learning_rate], feed_dict=feed_dict)
             summary_writer.add_summary(summary, step)
             save(saver, sess, args.snapshot_dir, step)
-            sys.stdout.write('step {:d}, mean_iou: {:.6f}\n'.format(step, 
-                mean_iou_float))
+            sys.stdout.write('step {:d}, tot_loss = {:.6f}, seg_loss = {:.6f}, reg_loss = {:.6f}, mean_iou: {:.6f}, lr: {:.6f}({:.3f} sec/step)\n'.format(step, tot_loss_float, seg_loss_float, reg_loss_float, mean_iou_float, lr_float, duration))
             sys.stdout.flush()
         else:
-            tot_loss_float, seg_loss_float, reg_loss_float, _ = sess.run([total_loss, seg_loss, reg_loss, train_op], feed_dict=feed_dict)
+            tot_loss_float, seg_loss_float, reg_loss_float, mean_iou_float, _, _, lr_float = sess.run([total_loss, seg_loss, reg_loss, mean_iou, update_mean_iou, train_op, learning_rate], feed_dict=feed_dict)
         duration = time.time() - start_time
-        sys.stdout.write('step {:d}, tot_loss = {:.6f}, seg_loss = {:.6f}, reg_loss = {:.6f}({:.3f} sec/step)\n'.format(step, tot_loss_float, seg_loss_float, reg_loss_float,  duration))
+        sys.stdout.write('step {:d}, tot_loss = {:.6f}, seg_loss = {:.6f}, reg_loss = {:.6f}, mean_iou: {:.6f}, lr: {:.6f}({:.3f} sec/step)\n'.format(step, tot_loss_float, seg_loss_float, reg_loss_float, mean_iou_float, lr_float, duration))
         sys.stdout.flush()
 
         if coord.should_stop():
