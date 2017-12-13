@@ -10,10 +10,10 @@ tensorflow 1.2
 CUDA  8.0
 cuDNN 5.1
 ```
-#### Tensorflow 1.3+ (Updated in new branch)
+#### Tensorflow 1.4 (Updated in new branch)
 ```
 python 3.5
-tensorflow 1.3+
+tensorflow 1.4
 CUDA  8.0
 cuDNN 6.0
 ```
