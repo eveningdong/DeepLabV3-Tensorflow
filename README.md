@@ -26,5 +26,7 @@ pip3 install -r requirements.txt
 ## Train
 1. Configurate `config.py`.
 2. Run `python3 convert_voc12.py`, this will generate a tfrecord file in `$DATA_DIRECTORY/records`.
-3. Run `python3 train_voc12.py`
+3. 
+1) Single GPU: Run `python3 train_voc12.py`
+2) Multi GPUs: Run `python3 train_voc12_multi.py --num_gpus=NUM_GPUS`
 
