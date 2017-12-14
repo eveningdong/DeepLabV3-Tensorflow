@@ -5,8 +5,8 @@ This is an (re-)implementation of [DeepLabv3](https://arxiv.org/abs/1706.05587) 
 
 ## Features
 - [x] Tensorflow 1.4 support
-- [ ] Multi-GPUs on single machine (TF 1.4)
-- [ ] Multi-GPUs on multi servers (TF 1.4)
+- [ ] Multi-GPUs on single machine
+- [ ] Multi-GPUs on multi servers
 - [ ] ImageNet pre-trained weights for ResNet101
 - [ ] Pre-training on MS COCO
 
@@ -34,5 +34,7 @@ pip3 install -r requirements.txt
 ## Train
 1. Configurate `config.py`.
 2. Run `python3 convert_voc12.py`, this will generate a tfrecord file in `$DATA_DIRECTORY/records`.
-3. Run `python3 train_voc12.py`
+3. 
+   1. Single GPU: Run `python3 train_voc12.py`
+   2. Multi GPUs: Run `python3 train_voc12_multi.py --num_gpus=NUM_GPUS`
 
