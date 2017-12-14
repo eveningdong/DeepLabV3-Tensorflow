@@ -110,7 +110,7 @@ def main():
     
     summary_op = tf.summary.merge_all()
 
-    global_step = slim.get_or_create_global_step()
+    global_step = tf.train.get_or_create_global_step()
 
     # Define loss and optimisation parameters.
     base_lr = tf.constant(args.learning_rate)
