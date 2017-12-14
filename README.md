@@ -47,11 +47,11 @@ pip3 install -r requirements.txt
 This repository only implements MG(1, 2, 4), ASPP and Image Pooling. The training is started from scratch. 
 
 | mIOU      | GPU       | Train    | Test      |
-| --------- | ---------:| --------:| ---------:|
+| --------- |:---------:|:--------:|:---------:|
 | paper     | 1         |          | 77.21%    | 
 | repo      | 1         | 84.57%   |           |
 | repo      |           |          |           |
 
-The improvement can be achieved by finetuning on hyperparameters such as **learning rate**, **batch size**, **optimizer**, **initializer**. I didn't spend too much time on training and the results are temporary. 
+The improvement can be achieved by finetuning on hyperparameters such as **learning rate**, **batch size**, **optimizer**, **initializer** and **batch normalization**. I didn't spend too much time on training and the results are temporary. 
 
 *Welcome to try and report your numbers.*
