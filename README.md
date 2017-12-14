@@ -4,27 +4,29 @@ Reimplementation of DeepLabV3 Semantic Segmentation
 This is an (re-)implementation of [DeepLabv3](https://arxiv.org/abs/1706.05587) in TensorFlow for semantic image segmentation on the [PASCAL VOC dataset](http://host.robots.ox.ac.uk/pascal/VOC/). The implementation is based on [DrSleep's implementation on data augmentation](https://github.com/DrSleep/tensorflow-deeplab-resnet) and [CharlesShang's implementation on tfrecord](https://github.com/CharlesShang/FastMaskRCNN).
 
 ## Features
-- [x] Tensorflow 1.4 support
+- [x] Tensorflow support
 - [ ] Multi-GPUs on single machine
 - [ ] Multi-GPUs on multi servers
 - [ ] ImageNet pre-trained weights for ResNet101
 - [ ] Pre-training on MS COCO
 
 ## Requirement
-#### Tensorflow 1.2
-```
-python 3.5
-tensorflow 1.2
-CUDA  8.0
-cuDNN 5.1
-```
-#### Tensorflow 1.4 (Updated in new branch)
+#### Tensorflow 1.4
 ```
 python 3.5
 tensorflow 1.4
 CUDA  8.0
 cuDNN 6.0
 ```
+
+#### Tensorflow 1.2 (Branch `tf_1.2`)
+```
+python 3.5
+tensorflow 1.2
+CUDA  8.0
+cuDNN 5.1
+```
+The code written in Tensorflow 1.4 are compatible with Tensorflow 1.2, tested on single GPU machine.
 
 #### Installation
 ```
