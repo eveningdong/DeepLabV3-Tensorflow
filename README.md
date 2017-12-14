@@ -9,6 +9,8 @@ This is an (re-)implementation of [DeepLabv3](https://arxiv.org/abs/1706.05587) 
 - [ ] Multi-GPUs on multi servers
 - [ ] ImageNet pre-trained weights for ResNet101
 - [ ] Pre-training on MS COCO
+- [ ] Multi-scale inference
+- [ ] Test on the VOC12
 
 ## Requirement
 #### Tensorflow 1.4
@@ -40,3 +42,16 @@ pip3 install -r requirements.txt
    1. Single GPU: Run `python3 train_voc12.py`
    2. Multi GPUs: Run `python3 train_voc12_multi.py --num_gpus=NUM_GPUS`
 
+
+## Performance
+This repository only implements MG(1, 2, 4), ASPP and Image Pooling. The training is started from scratch. 
+
+| mIOU      | GPU       | Train    | Test      |
+| --------- | ---------:| --------:| ---------:|
+| paper     | 1         |          | 77.21%    | 
+| repo      | 1         | 84.57%   |           |
+| repo      |           |          |           |
+
+The improvement can be achieved by finetuning on hyperparameters such as **learning rate**, **batch size**, **optimizer**, **initializer**. I didn't spend too much time on training and the results are temporary. 
+
+*Welcome to try and report your numbers.*
