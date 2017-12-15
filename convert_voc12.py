@@ -47,7 +47,7 @@ def _convert_to_tfrecord(record_dir):
   with tf.Session('') as sess:
     record_filename = os.path.join(record_dir, '{}.tfrecord'.format(args.data_name))
     with tf.python_io.TFRecordWriter(record_filename) as tfrecord_writer:
-      with open('./libs/datasets/VOC12/trainval.txt', 'r') as f:
+      with open('./libs/datasets/VOC12/train.txt', 'r') as f:
         # 14720 images for train and val
         count = 1
         for line in f:
