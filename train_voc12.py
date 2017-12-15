@@ -70,7 +70,7 @@ def main():
     net, end_points = deeplabv3(image_batch,
                                 num_classes=args.num_classes,
                                 layer_depth=args.num_layers,
-                                is_training=args.is_training)
+                                )
     # For a small batch size, it is better to keep 
     # the statistics of the BN layers (running means and variances)
     # frozen, and to not update the values provided by the pre-trained model. 

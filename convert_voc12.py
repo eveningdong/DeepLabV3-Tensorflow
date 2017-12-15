@@ -45,11 +45,15 @@ def _convert_to_tfrecord(record_dir):
   label_placeholder = tf.placeholder(dtype=tf.uint8)
   encoded_label = tf.image.encode_png(tf.expand_dims(label_placeholder, 2))
   with tf.Session('') as sess:
-    record_filename = os.path.join(record_dir, '{}.tfrecord'.format(args.data_name))
+    record_filename = os.path.join(record_dir, '{}_{}.tfrecord'.format(args.data_name, args.split_name))
     with tf.python_io.TFRecordWriter(record_filename) as tfrecord_writer:
-      with open('./libs/datasets/VOC12/train.txt', 'r') as f:
-        # 14720 images for train and val
+      with open('./libs/datasets/VOC12/{}.txt'.format(args.split_name), 'r') as f:
         count = 1
+        if args.split_name == 'train':
+          total = 10582
+        elif args.split_name == 'val':
+          total = 1449
+
         for line in f:
           line = line.strip()
           img, gt = line.split()
@@ -64,7 +68,7 @@ def _convert_to_tfrecord(record_dir):
           example = _convert_to_example(img_path, image_data, label_string, 
             h, w)
           tfrecord_writer.write(example.SerializeToString())
-          sys.stdout.write('Write {} {}/14270\n'.format(img_path, count))
+          sys.stdout.write('Write {} {}/{}\n'.format(img_path, count, total))
           sys.stdout.flush()
           count += 1
 

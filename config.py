@@ -11,9 +11,9 @@ BATCH_SIZE = 4
 CKPT = 0
 DATA_DIRECTORY = '/storage/ndong/data/auto/VOC/VOCdevkit/VOC2012'
 DATA_NAME = 'VOC12'
-DATA_LIST_PATH = './libs/datasets/VOC12/trainval.txt'
 IGNORE_LABEL = 255
 INPUT_SIZE = 512
+IS_TRAINING = 1
 LEARNING_RATE = 1e-2
 MOMENTUM = 0.9
 NUM_CLASSES = 21
@@ -26,6 +26,7 @@ RESTORE_FROM = None
 SAVE_NUM_IMAGES = 1
 SAVE_PRED_EVERY = 1000
 SNAPSHOT_DIR = './snapshots'
+SPLIT_NAME = 'train'
 WEIGHT_DECAY = 1
 
 parser = argparse.ArgumentParser(description="DeepLabV3")
@@ -35,15 +36,13 @@ parser.add_argument("--ckpt", type=int, default=CKPT,
                     help="Checkpoint to restore.")
 parser.add_argument("--data-dir", type=str, default=DATA_DIRECTORY,
                     help="Path to the directory containing the PASCAL VOC dataset.")
-parser.add_argument("--data-list", type=str, default=DATA_LIST_PATH,
-                    help="Path to the file listing the images in the dataset.")
 parser.add_argument("--data-name", type=str, default=DATA_NAME,
                     help="Name of the dataset.")
 parser.add_argument("--ignore-label", type=int, default=IGNORE_LABEL,
                     help="The index of the label to ignore during the training.")
 parser.add_argument("--input-size", type=int, default=INPUT_SIZE,
                     help="height and width of images.")
-parser.add_argument("--is-training", action="store_true",
+parser.add_argument("--is-training", type=int, default=IS_TRAINING,
                     help="Whether to updates the running means and variances during the training.")
 parser.add_argument("--learning-rate", type=float, default=LEARNING_RATE,
                     help="Base learning rate for training with polynomial decay.")
@@ -75,7 +74,10 @@ parser.add_argument("--save-pred-every", type=int, default=SAVE_PRED_EVERY,
                     help="Save summaries and checkpoint every often.")
 parser.add_argument("--snapshot-dir", type=str, default=SNAPSHOT_DIR,
                     help="Where to save snapshots of the model.")
+parser.add_argument("--split-name", type=str, default=SPLIT_NAME,
+                    help="Split name.")
 parser.add_argument("--weight-decay", type=float, default=WEIGHT_DECAY,
                     help="Regularisation parameter for L2-loss.")
 
 args = parser.parse_args()
+args.is_training = bool(args.is_training)

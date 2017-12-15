@@ -1,7 +1,7 @@
 # DeepLabV3 Semantic Segmentation
 Reimplementation of DeepLabV3 Semantic Segmentation
 
-This is an (re-)implementation of [DeepLabv3](https://arxiv.org/abs/1706.05587) in TensorFlow for semantic image segmentation on the [PASCAL VOC dataset](http://host.robots.ox.ac.uk/pascal/VOC/). The implementation is based on [DrSleep's implementation on data augmentation](https://github.com/DrSleep/tensorflow-deeplab-resnet) and [CharlesShang's implementation on tfrecord](https://github.com/CharlesShang/FastMaskRCNN).
+This is an (re-)implementation of [DeepLabv3](https://arxiv.org/abs/1706.05587) in TensorFlow for semantic image segmentation on the [PASCAL VOC dataset](http://host.robots.ox.ac.uk/pascal/VOC/). The implementation is based on [DrSleep's implementation on DeepLabV2](https://github.com/DrSleep/tensorflow-deeplab-resnet) and [CharlesShang's implementation on tfrecord](https://github.com/CharlesShang/FastMaskRCNN).
 
 ## Features
 - [x] Tensorflow support
@@ -9,8 +9,8 @@ This is an (re-)implementation of [DeepLabv3](https://arxiv.org/abs/1706.05587) 
 - [ ] Multi-GPUs on multi servers (asynchronous update)
 - [ ] ImageNet pre-trained weights for ResNet101
 - [ ] Pre-training on MS COCO
-- [ ] Inference and multi-scale inference
-- [ ] Test on the VOC12
+- [ ] Evaluation on VOC 2012
+- [x] Multi-scale evaluation on VOC 2012
 
 ## Requirement
 #### Tensorflow 1.4
@@ -37,7 +37,7 @@ pip3 install -r requirements.txt
 
 ## Train
 1. Configurate `config.py`.
-2. Run `python3 convert_voc12.py`, this will generate a tfrecord file in `$DATA_DIRECTORY/records`.
+2. Run `python3 convert_voc12.py --split-name=SPLIT_NAME`, this will generate a tfrecord file in `$DATA_DIRECTORY/records`.
 3. 
    1. Single GPU: Run `python3 train_voc12.py`
    2. Multi GPUs: Run `python3 train_voc12_multi_gpu.py --num_gpus=NUM_GPUS`
@@ -46,11 +46,13 @@ pip3 install -r requirements.txt
 ## Performance
 This repository only implements MG(1, 2, 4), ASPP and Image Pooling. The training is started from scratch. 
 
-| mIOU      | GPU       | Train    | Test      |
+| mIOU      | GPU       | Train    | Val       |
 | --------- |:---------:|:--------:|:---------:|
 | paper     | 1         |          | 77.21%    | 
 | repo      | 1         | 87.94%   |           |
 | repo      |           |          |           |
+
+The validation mIOU for this repo is inferenced without multi-scale and left-right flippling.
 
 The improvement can be achieved by finetuning on hyperparameters such as **learning rate**, **batch size**, **optimizer**, **initializer** and **batch normalization**. I didn't spend too much time on training and the results are temporary. 
 

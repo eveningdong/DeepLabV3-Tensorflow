@@ -7,7 +7,7 @@ def preprocess_image(image, gt_mask, is_training=False):
     if is_training:
         return _preprocess_for_training(image, gt_mask)
     else:
-        return preprocess_for_test(image, gt_mask)
+        return _preprocess_for_test(image, gt_mask)
 
 
 def _preprocess_for_training(image, gt_mask):
@@ -33,6 +33,10 @@ def _preprocess_for_training(image, gt_mask):
 
     return image, gt_mask
 
-# TODO(ndong) implement for 
 def _preprocess_for_test(image, gt_mask):
-  return image, gt_mask
+    image = tf.to_float(image)
+    image = tf.reverse(image, axis=[-1])
+    image -= IMG_MEAN
+    image = tf.expand_dims(image, 0)
+    gt_mask = tf.expand_dims(gt_mask, 0)
+    return image, gt_mask
