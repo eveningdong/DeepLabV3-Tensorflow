@@ -5,11 +5,11 @@ This is an (re-)implementation of [DeepLabv3](https://arxiv.org/abs/1706.05587) 
 
 ## Features
 - [x] Tensorflow support
-- [ ] Multi-GPUs on single machine
-- [ ] Multi-GPUs on multi servers
+- [ ] Multi-GPUs on single machine (synchronous update)
+- [ ] Multi-GPUs on multi servers (asynchronous update)
 - [ ] ImageNet pre-trained weights for ResNet101
 - [ ] Pre-training on MS COCO
-- [ ] Multi-scale inference
+- [ ] Inference and multi-scale inference
 - [ ] Test on the VOC12
 
 ## Requirement
@@ -40,7 +40,7 @@ pip3 install -r requirements.txt
 2. Run `python3 convert_voc12.py`, this will generate a tfrecord file in `$DATA_DIRECTORY/records`.
 3. 
    1. Single GPU: Run `python3 train_voc12.py`
-   2. Multi GPUs: Run `python3 train_voc12_multi.py --num_gpus=NUM_GPUS`
+   2. Multi GPUs: Run `python3 train_voc12_multi_gpu.py --num_gpus=NUM_GPUS`
 
 
 ## Performance

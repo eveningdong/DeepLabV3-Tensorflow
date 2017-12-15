@@ -43,7 +43,7 @@ def get_dataset(tfrecord_path):
     num_classes=len(categories),
     labels_to_names={i: cat for i, cat in enumerate(categories)})
 
-def extract_batch(dataset, is_training):
+def extract_batch(dataset, batch_size, is_training):
   with tf.device("/cpu:0"):
     data_provider = slim.dataset_data_provider.DatasetDataProvider(
       dataset, num_readers=4, common_queue_capacity=512, common_queue_min=32)
@@ -51,14 +51,14 @@ def extract_batch(dataset, is_training):
     image, gt_mask = data_provider.get(['image', 'segmentation'])
     image, gt_mask = preprocess.preprocess_image(image, gt_mask, is_training)
 
-  return tf.train.shuffle_batch([image, gt_mask], args.batch_size, 4096, 64, num_threads=4)
+  return tf.train.shuffle_batch([image, gt_mask], batch_size, 4096, 64, num_threads=4)
 
-def read_data(is_training=True):
+def read_data(batch_size=args.batch_size, is_training=True):
   file_pattern = '{}.tfrecord'.format(args.data_name)
   tfrecord_path = os.path.join(args.data_dir,'records',file_pattern)
   dataset = get_dataset(tfrecord_path)
   # image, gt_mask = read(tfrecord_path)
-  image, gt_mask = extract_batch(dataset, is_training)
+  image, gt_mask = extract_batch(dataset, batch_size, is_training)
   return image, gt_mask
 
 def read(tfrecords_filename):

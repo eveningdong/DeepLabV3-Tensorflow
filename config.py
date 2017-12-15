@@ -17,6 +17,7 @@ INPUT_SIZE = 512
 LEARNING_RATE = 1e-2
 MOMENTUM = 0.9
 NUM_CLASSES = 21
+NUM_GPUS = 1
 NUM_LAYERS = 101
 NUM_STEPS = 600000
 POWER = 0.9
@@ -52,6 +53,8 @@ parser.add_argument("--not-restore-last", action="store_true",
                     help="Whether to not restore last (FC) layers.")
 parser.add_argument("--num-classes", type=int, default=NUM_CLASSES,
                     help="Number of classes to predict (including background).")
+parser.add_argument("--num-gpus", type=int, default=NUM_GPUS,
+                    help="Number of GPUs to use.")
 parser.add_argument("--num-layers", type=int, default=NUM_LAYERS,
                     help="Number of layes in ResNet).")
 parser.add_argument("--num-steps", type=int, default=NUM_STEPS,
