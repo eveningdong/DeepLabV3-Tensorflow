@@ -43,13 +43,13 @@ def get_dataset(tfrecord_path):
     num_classes=len(categories),
     labels_to_names={i: cat for i, cat in enumerate(categories)})
 
-def extract_batch(dataset, batch_size):
+def extract_batch(dataset, batch_size, is_training):
   with tf.device("/cpu:0"):
     data_provider = slim.dataset_data_provider.DatasetDataProvider(
       dataset, num_readers=4, shuffle=False, common_queue_capacity=512, common_queue_min=32)
 
     image, gt_mask = data_provider.get(['image', 'segmentation'])
-    image, gt_mask = preprocess.preprocess_image(image, gt_mask, is_training=True)
+    image, gt_mask = preprocess.preprocess_image(image, gt_mask, is_training=is_training)
  
     return tf.train.shuffle_batch([image, gt_mask], batch_size, 4096, 64, num_threads=4)
 
