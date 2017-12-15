@@ -9,8 +9,8 @@ This is an (re-)implementation of [DeepLabv3](https://arxiv.org/abs/1706.05587) 
 - [ ] Multi-GPUs on multi servers (asynchronous update)
 - [ ] ImageNet pre-trained weights for ResNet101
 - [ ] Pre-training on MS COCO
-- [ ] Evaluation on VOC 2012
-- [x] Multi-scale evaluation on VOC 2012
+- [x] Evaluation on VOC 2012
+- [ ] Multi-scale evaluation on VOC 2012
 
 ## Requirement
 #### Tensorflow 1.4
