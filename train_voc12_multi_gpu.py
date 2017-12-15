@@ -125,6 +125,7 @@ def main():
   # learning_rate = base_lr
   tf.summary.scalar('hyperparameters/learning_rate', learning_rate)
   opt = tf.train.MomentumOptimizer(learning_rate, args.momentum)
+  # opt = tf.train.GradientDescentOptimizer(learning_rate)
 
   grads = []
   seg_losses = [] 
@@ -150,7 +151,7 @@ def main():
           # Note that is_training=False still updates BN parameters gamma (scale) and beta (offset)
           # if they are presented in var_list of the optimiser definition.
           # Predictions.
-          raw_output = end_points['gpu{}/resnet{}/logits'.format(i, args.num_layers)]
+          raw_output = net
 
           # Predictions: ignoring all predictions with labels greater or equal than n_classes
           label_proc = prepare_label(split_label_batch[i], tf.shape(raw_output)[1:3], args.num_classes, one_hot=False)
