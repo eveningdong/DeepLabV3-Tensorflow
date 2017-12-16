@@ -83,7 +83,7 @@ def main():
     # Which variables to load. Running means and variances are not trainable,
     # thus all_variables() should be restored.
     restore_var = [v for v in tf.global_variables() if 'fc' not in v.name or not args.not_restore_last]
-    all_trainable = [v for v in tf.trainable_variables() if 'beta' not in v.name and 'gamma' not in v.name]
+    all_trainable = [v for v in tf.trainable_variables()]
     conv_trainable = [v for v in all_trainable if 'fc' not in v.name] # lr * 1.0
     
     # Predictions: ignoring all predictions with labels greater or equal than n_classes
