@@ -5,7 +5,7 @@ This is an (re-)implementation of [DeepLabv3](https://arxiv.org/abs/1706.05587) 
 
 ## Features
 - [x] Tensorflow support
-- [ ] Multi-GPUs on single machine (synchronous update)
+- [x] Multi-GPUs on single machine (synchronous update)
 - [ ] Multi-GPUs on multi servers (asynchronous update)
 - [ ] ImageNet pre-trained weights for ResNet101
 - [ ] Pre-training on MS COCO
