@@ -1,9 +1,3 @@
-"""Training script for the DeepLab-ResNet network on the PASCAL VOC dataset
-   for semantic image segmentation.
-
-This script trains the model using augmented PASCAL VOC,
-which contains approximately 10000 images for training and 1500 images for validation.
-"""
 import os
 import sys
 import argparse
@@ -54,15 +48,15 @@ def load(saver, sess, ckpt_dir):
   saver.restore(sess, ckpt_path)
   print("Restored model parameters from {}".format(ckpt_path))
 
-def get_num_available_gpus():
+def get_available_gpus():
   num_gpus = args.num_gpus
   local_device_protos = device_lib.list_local_devices()
-  num_available_gpus = len([x.name for x in local_device_protos if x.device_type == 'GPU'])
+  available_gpus = [x.name for x in local_device_protos if x.device_type == 'GPU']
     
-  if num_gpus > num_available_gpus:
-    return num_available_gpus
+  if num_gpus > len(available_gpus):
+    return available_gpus
 
-  return num_gpus
+  return available_gpus[:num_gpus]
 
 def average_gradients(gpu_grads):
   """Calculate the average gradient for each shared variable across all GPUs.
@@ -106,14 +100,15 @@ def main():
   input_size = (h, w)
 
   # Check available GPUs  
-  num_gpus = get_num_available_gpus()
+  available_gpus = get_available_gpus()
+  num_gpus = len(available_gpus)
 
   tf.set_random_seed(args.random_seed)
     
   # Create queue coordinator.
   coord = tf.train.Coordinator()
 
-  image_batch, label_batch = read_data(batch_size=num_gpus * args.batch_size)
+  image_batch, label_batch = read_data(batch_size=args.batch_size, is_training=args.is_training)
   split_image_batch = tf.split(image_batch, num_gpus, 0)
   split_label_batch = tf.split(label_batch, num_gpus, 0)
 
@@ -136,10 +131,8 @@ def main():
 
   with tf.variable_scope(tf.get_variable_scope()):
     for i in range(num_gpus):
-      with tf.device('/gpu:{}'.format(i)):
-        with tf.name_scope('gpu{}'.format(i)) as scope:
-          # Create network.
-          print('Device: {}'.format(scope))
+      for i, device in enumerate(available_gpus):
+        with tf.device(device):
           net, end_points = deeplabv3(split_image_batch[i],
                                       num_classes=args.num_classes,
                                       layer_depth=args.num_layers,
@@ -164,17 +157,18 @@ def main():
           # Pixel-wise softmax loss.
           loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=seg_logits, labels=seg_gt)
           seg_loss = tf.reduce_mean(loss)
-          # tf.summary.scalar('loss/seg', seg_loss)
           seg_losses.append(seg_loss)
+          
+          # TODO (Bug)
+          # The regularization loss in each GPU is large and it impedes the optimization of segmentation loss.
 
-          reg_losses = [args.weight_decay * tf.nn.l2_loss(v) for v in tf.trainable_variables() if 'weights' in v.name]
-          reg_loss = tf.add_n(reg_losses)
-          # tf.summary.scalar('loss/reg', reg_loss)
+          # reg_losses = [args.weight_decay * tf.nn.l2_loss(v) for v in tf.trainable_variables()]
+          # reg_loss = tf.add_n(reg_losses)
+          reg_loss = tf.constant(0.0)          
           reg_losses.append(reg_loss)
 
-          total_loss = seg_loss + reg_loss
-          # tf.summary.scalar('loss/tot', total_loss)
-          tot_losses.append(total_loss)
+          tot_loss = seg_loss + reg_loss
+          tot_losses.append(tot_loss)
 
           seg_pred = tf.argmax(seg_logits, axis=1)
           seg_preds.append(seg_pred)
@@ -182,11 +176,12 @@ def main():
           # Reuse variables for the next GPU.
           tf.get_variable_scope().reuse_variables()
 
-          grad = opt.compute_gradients(total_loss, var_list=[v for v in tf.trainable_variables() if 'beta' not in v.name and 'gamma' not in v.name])
+          grad = opt.compute_gradients(tot_loss, var_list=[v for v in tf.trainable_variables()])
           grads.append(grad)
-
+  
+  # TODO (Fast Synchronization or Asynchronization Implementation)
   # We must calculate the mean of each gradient. Note that this is the
-  # synchronization point across all GPUs.
+  # synchronization point across all GPUs. However, the synchronization time is longer than expection.
   grads = average_gradients(grads)
   train_op = opt.apply_gradients(grads, global_step=global_step)
 
@@ -202,7 +197,7 @@ def main():
   avg_reg_loss = tf.reduce_mean(reg_losses)
   tf.summary.scalar('loss/reg_loss', avg_reg_loss)
 
-  avg_tot_loss = tf.reduce_mean(tot_losses)
+  avg_tot_loss = avg_seg_loss + avg_reg_loss
   tf.summary.scalar('loss/tot_loss', avg_tot_loss)
     
   # Which variables to load. Running means and variances are not trainable,
