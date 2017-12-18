@@ -1,5 +1,6 @@
 import tensorflow as tf
 
+from config import *
 from libs.nets import resnet_utils
 from libs.nets.resnet_v1 import bottleneck, resnet_arg_scope
 
