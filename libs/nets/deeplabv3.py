@@ -115,7 +115,7 @@ def deeplabv3(inputs,
 
             for i in range(3):
               with tf.variable_scope('unit_%d' % (i + 1), values=[net]):
-                net = bottleneck(net, depth=base_depth * 4, depth_bottleneck=base_depth, stride=1, rate=2)
+                net = bottleneck_hdc(net, depth=base_depth * 4, depth_bottleneck=base_depth, stride=1, rate=2)
             net = slim.utils.collect_named_outputs(end_points_collection, sc.name, net)
 
           with tf.variable_scope('block5', [net]) as sc:
