@@ -98,7 +98,7 @@ def main():
     seg_loss = tf.reduce_mean(loss)
     tf.summary.scalar('loss/seg', seg_loss)
     reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
-    reg_loss = args.weight_decay * tf.add_n(reg_losses)
+    reg_loss = tf.add_n(reg_losses)
     tf.summary.scalar('loss/reg', reg_loss)
     total_loss = seg_loss + reg_loss
     tf.summary.scalar('loss/tot', total_loss)

@@ -27,7 +27,7 @@ SAVE_NUM_IMAGES = 1
 SAVE_PRED_EVERY = 1000
 SNAPSHOT_DIR = './snapshots'
 SPLIT_NAME = 'train'
-WEIGHT_DECAY = 1
+WEIGHT_DECAY = 1e-4
 
 parser = argparse.ArgumentParser(description="DeepLabV3")
 parser.add_argument("--batch-size", type=int, default=BATCH_SIZE,

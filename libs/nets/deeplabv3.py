@@ -70,7 +70,7 @@ def deeplabv3(inputs,
   scope ='resnet{}'.format(layer_depth)
   with tf.variable_scope(scope, [inputs]) as sc:
     end_points_collection = sc.name + '_end_points'
-    with slim.arg_scope(resnet_arg_scope()):
+    with slim.arg_scope(resnet_arg_scope(weight_decay=args.weight_decay)):
       with slim.arg_scope([slim.conv2d, bottleneck],
                           outputs_collections=end_points_collection):
         with slim.arg_scope([slim.batch_norm], is_training=is_training):
