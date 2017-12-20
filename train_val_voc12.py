@@ -102,7 +102,7 @@ def main():
     reg_loss = tf.add_n(reg_losses)
     reg_loss_sum = tf.summary.scalar('loss/reg', reg_loss)
     tot_loss = seg_loss + reg_loss
-    tot_loss_sum = tf.summary.scalar('loss/tot', total_loss)
+    tot_loss_sum = tf.summary.scalar('loss/tot', tot_loss)
 
     # Define loss and optimisation parameters.
     base_lr = tf.constant(args.learning_rate)
