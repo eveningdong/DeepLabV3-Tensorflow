@@ -177,7 +177,7 @@ def deeplabv3(inputs,
             net = slim.conv2d(net, 256, [1,1], stride=1, scope='1x1conv')
             net = slim.utils.collect_named_outputs(end_points_collection, sc.name, net)
 
-          net = slim.conv2d(net, num_classes, [1,1], stride=1, activation_fn=None, scope='logits')
+          net = slim.conv2d(net, num_classes, [1,1], stride=1, activation_fn=None, normalizer_fn=None, scope='logits')
           net = slim.utils.collect_named_outputs(end_points_collection, sc.name, net)
 
           end_points = slim.utils.convert_collection_to_dict(
