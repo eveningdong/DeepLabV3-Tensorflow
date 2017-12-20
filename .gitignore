@@ -98,8 +98,13 @@ ENV/
 data/pretrained_models
 output
 
-# Swap 
+# swap 
 *.swp
 *.swo
 
+# checkpoints
 snapshots
+
+# shell helper
+train.sh
+test.sh

@@ -13,7 +13,7 @@ DATA_DIRECTORY = '/storage/ndong/data/auto/VOC/VOCdevkit/VOC2012'
 DATA_NAME = 'VOC12'
 IGNORE_LABEL = 255
 INPUT_SIZE = 512
-IS_TRAINING = 1
+IS_TRAINING = 'True'
 LEARNING_RATE = 1e-2
 MOMENTUM = 0.9
 NUM_CLASSES = 21
@@ -42,7 +42,7 @@ parser.add_argument("--ignore-label", type=int, default=IGNORE_LABEL,
                     help="The index of the label to ignore during the training.")
 parser.add_argument("--input-size", type=int, default=INPUT_SIZE,
                     help="height and width of images.")
-parser.add_argument("--is-training", type=int, default=IS_TRAINING,
+parser.add_argument("--is-training", type=str, default=IS_TRAINING,
                     help="Whether to updates the running means and variances during the training.")
 parser.add_argument("--learning-rate", type=float, default=LEARNING_RATE,
                     help="Base learning rate for training with polynomial decay.")
@@ -80,4 +80,4 @@ parser.add_argument("--weight-decay", type=float, default=WEIGHT_DECAY,
                     help="Regularisation parameter for L2-loss.")
 
 args = parser.parse_args()
-args.is_training = bool(args.is_training)
+args.is_training = args.is_training.strip() == 'True'

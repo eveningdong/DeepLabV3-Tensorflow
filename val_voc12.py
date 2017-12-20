@@ -1,10 +1,3 @@
-"""Training script for the DeepLab-ResNet network on the PASCAL VOC dataset
-   for semantic image segmentation.
-
-This script trains the model using augmented PASCAL VOC,
-which contains approximately 10000 images for training and 1500 images for validation.
-"""
-import os
 import sys
 import argparse
 import numpy as np
@@ -90,12 +83,12 @@ def main():
 
     seg_gt = tf.cast(label_batch, tf.int32)
     seg_gt = tf.reshape(seg_gt, [-1,])
-    mask = tf.cast(tf.less_equal(seg_gt, args.num_classes), tf.int32)
-     
-    seg_pred = tf.gather(seg_pred, mask)
-    seg_gt = tf.gather(seg_gt, mask)
+    mask = seg_gt <= args.num_classes - 1
 
-    mean_iou, update_mean_iou = streaming_mean_iou(seg_pred, seg_gt, num_classes=args.num_classes)    
+    seg_pred = tf.boolean_mask(seg_pred, mask)
+    seg_gt = tf.boolean_mask(seg_gt, mask)
+
+    mean_iou, update_mean_iou = streaming_mean_iou(seg_pred, seg_gt, num_classes=args.num_classes)
     
     # Set up tf session and initialize variables. 
     config = tf.ConfigProto()
@@ -104,9 +97,6 @@ def main():
 
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
-    
-    # Saver for storing checkpoints of the model.
-    # saver = tf.train.Saver(var_list=tf.global_variables(), max_to_keep=20)
     
     # Load variables if the checkpoint is provided.
     if args.ckpt > 0 or args.restore_from is not None:
@@ -120,7 +110,7 @@ def main():
     
     for step in range(1449):
         start_time = time.time()
-        mean_iou_float, _, = sess.run([mean_iou, update_mean_iou])
+        mean_iou_float, _ = sess.run([mean_iou, update_mean_iou])
         duration = time.time() - start_time
         sys.stdout.write('step {:d}, mean_iou: {:.6f}({:.3f} sec/step)\n'.format(step, mean_iou_float, duration))
         sys.stdout.flush()
