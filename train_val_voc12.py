@@ -104,19 +104,28 @@ def main():
     tot_loss = seg_loss + reg_loss
     tot_loss_sum = tf.summary.scalar('loss/tot', tot_loss)
 
+    seg_pred = tf.argmax(seg_logits, axis=1)
+    train_mean_iou, train_update_mean_iou = streaming_mean_iou(seg_pred, 
+        seg_gt, args.num_classes, name="train_iou")  
+    train_iou_sum = tf.summary.scalar('accuracy/train_mean_iou', 
+        train_mean_iou)
+    train_initializer = tf.variables_initializer(var_list=tf.get_collection(tf.GraphKeys.LOCAL_VARIABLES, scope="train_iou"))
+
     # Define loss and optimisation parameters.
     base_lr = tf.constant(args.learning_rate)
     step_ph = tf.placeholder(dtype=tf.float32, shape=())
     learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
     # learning_rate = base_lr
     lr_sum = tf.summary.scalar('params/learning_rate', learning_rate)
+
     train_sum_op = tf.summary.merge([seg_loss_sum, reg_loss_sum, 
-        tot_loss_sum, lr_sum])
+        tot_loss_sum, train_iou_sum, lr_sum])
 
     image_batch_val, label_batch_val = read_data(is_training=False)
-    _, end_points_val = deeplabv3(image_batch,
+    _, end_points_val = deeplabv3(image_batch_val,
                                 num_classes=args.num_classes,
                                 layer_depth=args.num_layers,
+                                reuse=True,
                                 is_training=False,
                                 )
     raw_output_val = end_points_val['resnet{}/logits'.format(args.num_layers)]
@@ -129,14 +138,16 @@ def main():
 
     seg_gt_val = tf.cast(label_batch_val, tf.int32)
     seg_gt_val = tf.reshape(seg_gt_val, [-1,])
-    mask = seg_gt_val <= args.num_classes - 1
+    mask_val = seg_gt_val <= args.num_classes - 1
 
     seg_pred_val = tf.boolean_mask(seg_pred_val, mask_val)
     seg_gt_val = tf.boolean_mask(seg_gt_val, mask_val)
 
-    mean_iou, update_mean_iou = streaming_mean_iou(seg_pred_val, seg_gt_val, num_classes=args.num_classes)        
-    iou_sum = tf.summary.scalar('accuracy/mean_iou', mean_iou)
-    test_sum_op = tf.summary.merge([iou_sum])
+    val_mean_iou, val_update_mean_iou = streaming_mean_iou(seg_pred_val, 
+        seg_gt_val, num_classes=args.num_classes, name="val_iou")        
+    val_iou_sum = tf.summary.scalar('accuracy/val_mean_iou', val_mean_iou)
+    val_initializer = tf.variables_initializer(var_list=tf.get_collection(tf.GraphKeys.LOCAL_VARIABLES, scope="val_iou"))
+    test_sum_op = tf.summary.merge([val_iou_sum])
 
     global_step = tf.train.get_or_create_global_step()
     
@@ -145,7 +156,7 @@ def main():
     grads_conv = tf.gradients(tot_loss, conv_trainable)
     # train_op = opt.apply_gradients(zip(grads_conv, conv_trainable))
     train_op = slim.learning.create_train_op(
-        total_loss, opt,
+        tot_loss, opt,
         global_step=global_step,
         variables_to_train=conv_trainable,
         summarize_gradients=True)
@@ -169,32 +180,32 @@ def main():
     # Start queue threads.
     threads = tf.train.start_queue_runners(coord=coord, sess=sess)
     
-    tf.get_default_graph().finalize()
+    # tf.get_default_graph().finalize()
     summary_writer = tf.summary.FileWriter(args.snapshot_dir,
                                            sess.graph)
     
     # Iterate over training steps.
     for step in range(args.ckpt, args.num_steps):
-    # for step in range(1):
+        sess.run(train_initializer)
         start_time = time.time()
         feed_dict = { step_ph : step }
-        tot_loss_float, seg_loss_float, reg_loss_float, _, lr_float = sess.run([tot_loss, seg_loss, reg_loss, train_op, learning_rate], feed_dict=feed_dict)
+        tot_loss_float, seg_loss_float, reg_loss_float, _, lr_float, _, train_summary = sess.run([tot_loss, seg_loss, reg_loss, train_op, learning_rate, train_update_mean_iou, train_sum_op], feed_dict=feed_dict)
+        train_mean_iou_float = sess.run(train_mean_iou)
         duration = time.time() - start_time
         sys.stdout.write('step {:d}, tot_loss = {:.6f}, seg_loss = {:.6f}, reg_loss = {:.6f}, lr: {:.6f}({:.3f} sec/step)\n'.format(step, tot_loss_float, seg_loss_float, reg_loss_float, lr_float, duration))
         sys.stdout.flush()
 
         if step % args.save_pred_every == 0 and step > args.ckpt:
-            train_summary = sess.run([train_sum_op])
             summary_writer.add_summary(train_summary, step)
-
+            sess.run(val_initializer)
             for val_step in range(NUM_VAL-1):
-                _, _ = sess.run([mean_iou, update_mean_iou])
-
-            mean_iou_float, _, test_summary = sess.run([mean_iou, update_mean_iou, test_sum_op])
+                _, test_summary = sess.run([val_update_mean_iou, test_sum_op], feed_dict=feed_dict)
+            
             summary_writer.add_summary(test_summary, step)
+            val_mean_iou_float= sess.run(val_mean_iou)
 
             save(saver, sess, args.snapshot_dir, step)
-            sys.stdout.write('step {:d}, mean_iou: {:.6f}\n'.format(step, mean_iou_float))
+            sys.stdout.write('step {:d}, train_mean_iou: {:.6f}, val_mean_iou: {:.6f}\n'.format(step, train_mean_iou_float, val_mean_iou_float))
             sys.stdout.flush()
 
         if coord.should_stop():
