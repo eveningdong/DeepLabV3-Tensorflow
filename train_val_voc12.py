@@ -69,7 +69,7 @@ def main():
     # Create network.
     net, end_points = deeplabv3(image_batch,
                                 num_classes=args.num_classes,
-                                layer_depth=args.num_layers,
+                                depth=args.num_layers,
                                 is_training=True,
                                 )
     # For a small batch size, it is better to keep 
@@ -123,11 +123,11 @@ def main():
 
     image_batch_val, label_batch_val = read_data(is_training=False)
     _, end_points_val = deeplabv3(image_batch_val,
-                                num_classes=args.num_classes,
-                                layer_depth=args.num_layers,
-                                reuse=True,
-                                is_training=False,
-                                )
+                                  num_classes=args.num_classes,
+                                  depth=args.num_layers,
+                                  reuse=True,
+                                  is_training=False,
+                                  )
     raw_output_val = end_points_val['resnet{}/logits'.format(args.num_layers)]
     nh, nw = tf.shape(image_batch_val)[1], tf.shape(image_batch_val)[2]
 

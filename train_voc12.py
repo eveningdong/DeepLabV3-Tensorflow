@@ -69,7 +69,7 @@ def main():
     # Create network.
     net, end_points = deeplabv3(image_batch,
                                 num_classes=args.num_classes,
-                                layer_depth=args.num_layers,
+                                depth=args.num_layers,
                                 )
     # For a small batch size, it is better to keep 
     # the statistics of the BN layers (running means and variances)
