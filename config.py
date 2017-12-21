@@ -4,22 +4,22 @@ import os
 import argparse
 import numpy as np
 
-# TODO(RGB)
 IMG_MEAN = np.array((104.00698793,116.66876762,122.67891434), dtype=np.float32)
 
 BATCH_SIZE = 4
+BN_WEIGHT_DECAY = 0.9997
 CKPT = 0
 DATA_DIRECTORY = '/storage/ndong/data/auto/VOC/VOCdevkit/VOC2012'
 DATA_NAME = 'VOC12'
 IGNORE_LABEL = 255
-INPUT_SIZE = 512
-IS_TRAINING = 'True'
-LEARNING_RATE = 1e-2
+INPUT_SIZE = 513
+LEARNING_RATE = 0.01
 MOMENTUM = 0.9
 NUM_CLASSES = 21
 NUM_GPUS = 1
 NUM_LAYERS = 101
 NUM_STEPS = 600000
+NUM_TRAIN = 10582
 NUM_VAL = 1449
 POWER = 0.9
 RANDOM_SEED = 1234
@@ -33,18 +33,20 @@ WEIGHT_DECAY = 1e-4
 parser = argparse.ArgumentParser(description="DeepLabV3")
 parser.add_argument("--batch-size", type=int, default=BATCH_SIZE,
                     help="Number of images sent to the network in one step.")
+parser.add_argument("--bn-weight-decay", type=float, default=BN_WEIGHT_DECAY,
+                    help="Regularisation parameter for batch norm.")
 parser.add_argument("--ckpt", type=int, default=CKPT, 
                     help="Checkpoint to restore.")
 parser.add_argument("--data-dir", type=str, default=DATA_DIRECTORY,
                     help="Path to the directory containing the PASCAL VOC dataset.")
 parser.add_argument("--data-name", type=str, default=DATA_NAME,
                     help="Name of the dataset.")
+parser.add_argument("--freeze-bn", action="store_true",
+                    help="Whether to freeze batch norm params.")
 parser.add_argument("--ignore-label", type=int, default=IGNORE_LABEL,
                     help="The index of the label to ignore during the training.")
 parser.add_argument("--input-size", type=int, default=INPUT_SIZE,
                     help="height and width of images.")
-parser.add_argument("--is-training", type=str, default=IS_TRAINING,
-                    help="Whether to updates the running means and variances during the training.")
 parser.add_argument("--learning-rate", type=float, default=LEARNING_RATE,
                     help="Base learning rate for training with polynomial decay.")
 parser.add_argument("--momentum", type=float, default=MOMENTUM,
@@ -81,4 +83,3 @@ parser.add_argument("--weight-decay", type=float, default=WEIGHT_DECAY,
                     help="Regularisation parameter for L2-loss.")
 
 args = parser.parse_args()
-args.is_training = args.is_training.strip() == 'True'

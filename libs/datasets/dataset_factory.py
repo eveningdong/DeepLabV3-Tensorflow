@@ -53,7 +53,7 @@ def extract_batch(dataset, batch_size, is_training):
  
     return tf.train.shuffle_batch([image, gt_mask], batch_size, 4096, 64, num_threads=4)
 
-def read_data(batch_size=args.batch_size, is_training=args.is_training):
+def read_data(is_training, batch_size=args.batch_size):
   file_pattern = '{}_{}.tfrecord'.format(args.data_name, args.split_name)
   tfrecord_path = os.path.join(args.data_dir,'records',file_pattern)
 

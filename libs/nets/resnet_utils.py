@@ -197,7 +197,7 @@ def stack_blocks_dense(net, blocks, output_stride=None,
 
 
 def resnet_arg_scope(weight_decay=0.0001,
-                     batch_norm_decay=0.997,
+                     batch_norm_decay=0.9997,
                      batch_norm_epsilon=1e-5,
                      batch_norm_scale=True,
                      activation_fn=tf.nn.relu,
@@ -234,7 +234,7 @@ def resnet_arg_scope(weight_decay=0.0001,
   with slim.arg_scope(
       [slim.conv2d],
       weights_regularizer=slim.l2_regularizer(weight_decay),
-      weights_initializer=tf.truncated_normal_initializer(stddev=0.01),
+      weights_initializer=slim.variance_scaling_initializer(),
       activation_fn=activation_fn,
       normalizer_fn=slim.batch_norm if use_batch_norm else None,
       normalizer_params=batch_norm_params):

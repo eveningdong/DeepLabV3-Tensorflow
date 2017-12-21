@@ -5,7 +5,7 @@ This is an (re-)implementation of [DeepLabv3](https://arxiv.org/abs/1706.05587) 
 
 ## Features
 - [x] Tensorflow support
-- [x] Multi-GPUs on single machine (synchronous update)
+- [ ] Multi-GPUs on single machine (synchronous update)
 - [ ] Multi-GPUs on multi servers (asynchronous update)
 - [ ] ImageNet pre-trained weights for ResNet101
 - [ ] Pre-training on MS COCO
@@ -38,9 +38,7 @@ pip3 install -r requirements.txt
 ## Train
 1. Configurate `config.py`.
 2. Run `python3 convert_voc12.py --split-name=SPLIT_NAME`, this will generate a tfrecord file in `$DATA_DIRECTORY/records`.
-3. 
-   1. Single GPU: Run `python3 train_val_voc12.py` (with validation mIOU every SAVE_PRED_EVERY).
-   2. Multi GPUs: Run `python3 train_voc12_multi_gpu.py --num_gpus=NUM_GPUS`.
+3. Single GPU: Run `python3 train_voc12.py` (with validation mIOU every SAVE_PRED_EVERY).
 
 
 ## Performance
@@ -49,8 +47,7 @@ This repository only implements MG(1, 2, 4), ASPP and Image Pooling. The trainin
 | mIOU      | GPU       | Train    | Val       |
 | --------- |:---------:|:--------:|:---------:|
 | paper     | 1         |          | 77.21%    | 
-| repo      | 1         | 87.94%   |           |
-| repo      |           |          |           |
+| repo      | 1         |          |           |
 
 The validation mIOU for this repo is inferenced without multi-scale and left-right flippling.
 
