@@ -69,9 +69,8 @@ def read_tfrecord(tfrecords_filename):
   if not isinstance(tfrecords_filename, list):
     tfrecords_filename = [tfrecords_filename]
   filename_queue = tf.train.string_input_producer(
-    tfrecords_filename, num_epochs=1)
+    tfrecords_filename)
 
-  # options = tf.python_io.TFRecordOptions(TFRecordCompressionType.ZLIB)
   reader = tf.TFRecordReader()
   _, serialized_example = reader.read(filename_queue)
   features = tf.parse_single_example(
