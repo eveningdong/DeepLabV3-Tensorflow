@@ -44,13 +44,13 @@ pip3 install -r requirements.txt
 ## Performance
 This repository only implements MG(1, 2, 4), ASPP and Image Pooling. The training is started from scratch. 
 
-| mIOU      | GPU       | Train    | Val       |
-| --------- |:---------:|:--------:|:---------:|
-| paper     | 1         |          | 77.21%    | 
-| repo      | 1         |          |           |
+| mIOU      | GPU       | Val       |
+| --------- |:---------:|:---------:|
+| paper     | 1         | 77.21%    | 
+| repo      | 1         | 76.98%    |
 
-The validation mIOU for this repo is inferenced without multi-scale and left-right flippling.
+The validation mIOU for this repo is achieved without multi-scale and left-right flippling.
 
-The improvement can be achieved by finetuning on hyperparameters such as **learning rate**, **batch size**, **optimizer**, **initializer** and **batch normalization**. I didn't spend too much time on training and the results are temporary. 
+The improvement can be also achieved by finetuning on hyperparameters such as **learning rate**, **batch size**, **optimizer**, **initializer** and **batch normalization**. I didn't spend too much time on training and the results are temporary. 
 
 *Welcome to try and report your numbers.*
