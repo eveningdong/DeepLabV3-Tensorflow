@@ -168,7 +168,6 @@ def deeplabv3(inputs,
 
               aspp = tf.add_n(aspp_list)
               aspp = slim.utils.collect_named_outputs(end_points_collection, sc.name, aspp)
-              net = aspp
 
             with tf.variable_scope('img_pool', [net]) as sc:
               """Image Pooling
