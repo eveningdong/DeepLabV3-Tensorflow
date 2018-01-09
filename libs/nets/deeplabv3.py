@@ -224,10 +224,11 @@ def deeplabv3(inputs,
                     depth_bottleneck=base_depth, stride=1, rate=16)
               net = slim.utils.collect_named_outputs(end_points_collection, 
                 sc.name, net)
-
-          net = slim.conv2d(net, num_classes, [1,1], stride=1, 
-            activation_fn=None, normalizer_fn=None, scope='logits')
-          net = slim.utils.collect_named_outputs(end_points_collection, 
+          
+          with tf.variable_scope('logits',[net]) as sc:
+            net = slim.conv2d(net, num_classes, [1,1], stride=1, 
+              activation_fn=None, normalizer_fn=None)
+            net = slim.utils.collect_named_outputs(end_points_collection, 
             sc.name, net)
 
           end_points = slim.utils.convert_collection_to_dict(
