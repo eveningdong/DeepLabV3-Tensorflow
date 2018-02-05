@@ -47,10 +47,13 @@ This repository only implements MG(1, 2, 4), ASPP and Image Pooling. The trainin
 ### Updated 1/11/2018
 I continued training with learning rate 0.0001, there is a huge increase on validation mIOU.
 
+### Updated 2/05/2018
+There was an improvement on the implementation of Multi-grid, thanks @howard-mahe. The new validation results should be updated soon.
+
 | mIOU      | Validation       |
 | --------- |:----------------:|
 | paper     | 77.21%           | 
-| repo      | 85.41%           |
+| repo      |                  |
 
 The validation mIOU for this repo is achieved without multi-scale and left-right flippling.
 

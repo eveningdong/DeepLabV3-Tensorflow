@@ -6,6 +6,7 @@ from libs.nets.resnet_v1 import bottleneck, resnet_arg_scope
 
 slim = tf.contrib.slim
 
+'''Commented out due to suspicious implementation. 
 @slim.add_arg_scope
 def bottleneck_hdc(inputs,
                depth,
@@ -65,6 +66,7 @@ def bottleneck_hdc(inputs,
     return slim.utils.collect_named_outputs(outputs_collections,
                                             sc.name,
                                             output)
+'''
 
 def deeplabv3(inputs,
               num_classes,
@@ -94,7 +96,7 @@ def deeplabv3(inputs,
     end_points_collection = sc.name + '_end_points'
     with slim.arg_scope(resnet_arg_scope(weight_decay=args.weight_decay, 
       batch_norm_decay=args.bn_weight_decay)):
-      with slim.arg_scope([slim.conv2d, bottleneck, bottleneck_hdc],
+      with slim.arg_scope([slim.conv2d, bottleneck],
                           outputs_collections=end_points_collection):
         with slim.arg_scope([slim.batch_norm], is_training=is_training):
           net = inputs
@@ -146,9 +148,8 @@ def deeplabv3(inputs,
 
             for i in range(3):
               with tf.variable_scope('unit_%d' % (i + 1), values=[net]):
-                net = bottleneck_hdc(net, depth=base_depth * 4, 
-                  depth_bottleneck=base_depth, stride=1, rate=2, 
-                  multi_grid=multi_grid)
+                net = bottleneck(net, depth=base_depth * 4, 
+                  depth_bottleneck=base_depth, stride=1, rate=2*multi_grid[i])
             net = slim.utils.collect_named_outputs(end_points_collection, 
               sc.name, net)
 
@@ -200,8 +201,8 @@ def deeplabv3(inputs,
 
               for i in range(3):
                 with tf.variable_scope('unit_%d' % (i + 1), values=[net]):
-                  net = bottleneck_hdc(net, depth=base_depth * 4, 
-                    depth_bottleneck=base_depth, stride=1, rate=4)
+                  net = bottleneck(net, depth=base_depth * 4, 
+                    depth_bottleneck=base_depth, stride=1, rate=4*multi_grid[i])
               net = slim.utils.collect_named_outputs(end_points_collection, 
                 sc.name, net)
 
@@ -210,8 +211,8 @@ def deeplabv3(inputs,
 
               for i in range(3):
                 with tf.variable_scope('unit_%d' % (i + 1), values=[net]):
-                  net = bottleneck_hdc(net, depth=base_depth * 4, 
-                    depth_bottleneck=base_depth, stride=1, rate=8)
+                  net = bottleneck(net, depth=base_depth * 4, 
+                    depth_bottleneck=base_depth, stride=1, rate=8*multi_grid[i])
               net = slim.utils.collect_named_outputs(end_points_collection, 
                 sc.name, net)
 
@@ -220,8 +221,8 @@ def deeplabv3(inputs,
 
               for i in range(3):
                 with tf.variable_scope('unit_%d' % (i + 1), values=[net]):
-                  net = bottleneck_hdc(net, depth=base_depth * 4, 
-                    depth_bottleneck=base_depth, stride=1, rate=16)
+                  net = bottleneck(net, depth=base_depth * 4, 
+                    depth_bottleneck=base_depth, stride=1, rate=16*multi_grid[i])
               net = slim.utils.collect_named_outputs(end_points_collection, 
                 sc.name, net)
           
