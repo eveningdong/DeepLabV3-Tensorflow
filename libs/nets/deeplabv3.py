@@ -167,8 +167,8 @@ def deeplabv3(inputs,
                 branch_2 = slim.utils.collect_named_outputs(end_points_collection, sc.name, branch_2)
                 aspp_list.append(branch_2)
 
-              aspp = tf.add_n(aspp_list)
-              aspp = slim.utils.collect_named_outputs(end_points_collection, sc.name, aspp)
+              # aspp = tf.add_n(aspp_list)
+              # aspp = slim.utils.collect_named_outputs(end_points_collection, sc.name, aspp)
 
             with tf.variable_scope('img_pool', [net]) as sc:
               """Image Pooling
@@ -187,8 +187,9 @@ def deeplabv3(inputs,
               pooled = slim.utils.collect_named_outputs(end_points_collection, 
                 sc.name, pooled)
 
-            with tf.variable_scope('fusion', [aspp, pooled]) as sc:
-              net = tf.concat([aspp, pooled], 3)
+            with tf.variable_scope('fusion', [aspp_list, pooled]) as sc:
+              aspp_list.append(pooled)
+              net = tf.concat(aspp_list, 3)
               net = slim.utils.collect_named_outputs(end_points_collection, 
                 sc.name, net)
 
