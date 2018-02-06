@@ -65,7 +65,7 @@ def main():
     # Create queue coordinator.
     coord = tf.train.Coordinator()
 
-    image_batch, label_batch = read_data(is_training=True)
+    image_batch, label_batch = read_data(is_training=True, split_name='train')
     
     # Create network.
     net, end_points = deeplabv3(image_batch,
@@ -135,7 +135,7 @@ def main():
     train_sum_op = tf.summary.merge([seg_loss_sum, reg_loss_sum, 
         tot_loss_sum, train_iou_sum, lr_sum])
 
-    image_batch_val, label_batch_val = read_data(is_training=False)
+    image_batch_val, label_batch_val = read_data(is_training=False, split_name='val')
     _, end_points_val = deeplabv3(image_batch_val,
                                   num_classes=args.num_classes,
                                   depth=args.num_layers,
