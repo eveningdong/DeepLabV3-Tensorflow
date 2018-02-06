@@ -21,7 +21,7 @@ CUDA  8.0
 cuDNN 6.0
 ```
 
-#### Tensorflow 1.2 (Branch `tf_1.2`)
+#### Tensorflow 1.2
 ```
 python 3.5
 tensorflow 1.2
