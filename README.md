@@ -7,7 +7,7 @@ This is an (re-)implementation of [DeepLabv3 -- Rethinking Atrous Convolution fo
 - [x] Tensorflow support
 - [ ] Multi-GPUs on single machine (synchronous update)
 - [ ] Multi-GPUs on multi servers (asynchronous update)
-- [ ] ImageNet pre-trained weights for ResNet101
+- [x] ImageNet pre-trained weights
 - [ ] Pre-training on MS COCO
 - [x] Evaluation on VOC 2012
 - [ ] Multi-scale evaluation on VOC 2012
@@ -32,7 +32,7 @@ The code written in Tensorflow 1.4 are compatible with Tensorflow 1.2, tested on
 
 #### Installation
 ```
-pip3 install -r requirements.txt
+sh setup.sh
 ```
 
 ## Train

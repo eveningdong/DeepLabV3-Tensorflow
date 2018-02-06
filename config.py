@@ -12,6 +12,7 @@ CKPT = 0
 DATA_DIRECTORY = '/storage/ndong/data/auto/VOC/VOCdevkit/VOC2012'
 DATA_NAME = 'VOC12'
 IGNORE_LABEL = 255
+IMAGENET = './data/pretrained_models'
 INPUT_SIZE = 513
 LEARNING_RATE = 0.01
 MOMENTUM = 0.9
@@ -45,6 +46,8 @@ parser.add_argument("--freeze-bn", action="store_true",
                     help="Whether to freeze batch norm params.")
 parser.add_argument("--ignore-label", type=int, default=IGNORE_LABEL,
                     help="The index of the label to ignore during the training.")
+parser.add_argument("--imagenet", type=str, default=IMAGENET,
+                    help="Path to ImageNet pretrained weights.")
 parser.add_argument("--input-size", type=int, default=INPUT_SIZE,
                     help="height and width of images.")
 parser.add_argument("--learning-rate", type=float, default=LEARNING_RATE,

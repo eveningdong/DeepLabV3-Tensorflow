@@ -91,7 +91,7 @@ def deeplabv3(inputs,
     multi_grid = (1,2,4)
   else:
     multi_grid = (1,2,1)
-  scope ='resnet{}'.format(depth)
+  scope ='resnet_v1_{}'.format(depth)
   with tf.variable_scope(scope, [inputs], reuse=reuse) as sc:
     end_points_collection = sc.name + '_end_points'
     with slim.arg_scope(resnet_arg_scope(weight_decay=args.weight_decay, 

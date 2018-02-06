@@ -22,21 +22,21 @@ slim = tf.contrib.slim
 streaming_mean_iou = tf.contrib.metrics.streaming_mean_iou
 
 def save(saver, sess, logdir, step):
-   '''Save weights.
+    '''Save weights.
    
-   Args:
-     saver: TensorFlow Saver object.
-     sess: TensorFlow session.
-     logdir: path to the snapshots directory.
-     step: current training step.
-   '''
-   model_name = 'model.ckpt'
-   checkpoint_path = os.path.join(logdir, model_name)
+    Args:
+      saver: TensorFlow Saver object.
+      sess: TensorFlow session.
+      logdir: path to the snapshots directory.
+      step: current training step.
+    '''
+    model_name = 'model.ckpt'
+    checkpoint_path = os.path.join(logdir, model_name)
     
-   if not os.path.exists(logdir):
-      os.makedirs(logdir)
-   saver.save(sess, checkpoint_path, global_step=step)
-   print('The checkpoint has been created.')
+    if not os.path.exists(logdir):
+       os.makedirs(logdir)
+    saver.save(sess, checkpoint_path, global_step=step)
+    print('The checkpoint has been created.')
 
 def load(saver, sess, ckpt_dir):
     '''Load trained weights.
@@ -45,10 +45,13 @@ def load(saver, sess, ckpt_dir):
       saver: TensorFlow Saver object.
       sess: TensorFlow session.
       ckpt_path: path to checkpoint file with parameters.
-    ''' 
+    '''
     if args.ckpt == 0:
-        ckpt = tf.train.get_checkpoint_state(ckpt_dir)
-        ckpt_path = ckpt.model_checkpoint_path
+        if args.imagenet is not None:
+            ckpt_path = os.path.join(args.imagenet, 'resnet_v1_{}.ckpt'.format(args.num_layers).format(args.num_layers))
+        else:
+            ckpt = tf.train.get_checkpoint_state(ckpt_dir)
+            ckpt_path = ckpt.model_checkpoint_path
     else:
         ckpt_path = ckpt_dir+'/model.ckpt-%i' % args.ckpt
     saver.restore(sess, ckpt_path)
@@ -82,17 +85,26 @@ def main():
     # if they are presented in var_list of the optimizer definition.
 
     # Predictions.
-    raw_output = end_points['resnet{}/logits'.format(args.num_layers)]
+    raw_output = end_points['resnet_v1_{}/logits'.format(args.num_layers)]
     # Which variables to load. Running means and variances are not trainable,
     # thus all_variables() should be restored.
-    restore_var = [v for v in tf.global_variables() if 'fc' not in v.name 
-        or not args.not_restore_last]
+    if args.imagenet is not None:
+        restore_var = [v for v in tf.global_variables() if 
+          ('aspp' not in v.name) and 
+          ('img_pool' not in v.name) and 
+          ('fusion' not in v.name) and
+          ('block5' not in v.name) and
+          ('block6' not in v.name) and
+          ('block7' not in v.name) and
+          ('logits' not in v.name)]
+    else:
+        restore_var = [v for v in tf.global_variables()]
     if args.freeze_bn:
         all_trainable = [v for v in tf.trainable_variables() if 'beta' not in 
             v.name and 'gamma' not in v.name]
     else:
         all_trainable = [v for v in tf.trainable_variables()]
-    conv_trainable = [v for v in all_trainable if 'fc' not in v.name] 
+    conv_trainable = [v for v in all_trainable] 
     
     # Upsample the logits instead of donwsample the ground truth
     raw_output_up = tf.image.resize_bilinear(raw_output, [h, w])
@@ -142,7 +154,7 @@ def main():
                                   reuse=True,
                                   is_training=False,
                                   )
-    raw_output_val = end_points_val['resnet{}/logits'.format(args.num_layers)]
+    raw_output_val = end_points_val['resnet_v1_{}/logits'.format(args.num_layers)]
     nh, nw = tf.shape(image_batch_val)[1], tf.shape(image_batch_val)[2]
 
     seg_logits_val = tf.image.resize_bilinear(raw_output_val, [nh, nw])
@@ -188,7 +200,7 @@ def main():
     saver = tf.train.Saver(var_list=tf.global_variables(), max_to_keep=20)
     
     # Load variables if the checkpoint is provided.
-    if args.ckpt > 0 or args.restore_from is not None:
+    if args.ckpt > 0 or args.restore_from is not None or args.imagenet is not None:
         loader = tf.train.Saver(var_list=restore_var)
         load(loader, sess, args.snapshot_dir)
     
