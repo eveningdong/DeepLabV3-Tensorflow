@@ -1,5 +1,5 @@
 # Install requirements
-# pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 
 # Download Pre-Trained Model
 mkdir -p ./data/pretrained_models
