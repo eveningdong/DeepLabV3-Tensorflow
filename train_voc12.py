@@ -228,12 +228,12 @@ def main():
         sys.stdout.flush()
 
         if step % args.save_pred_every == 0 and step > args.ckpt:
-            summary_writer.add_summary(train_summary, step)
             sess.run(val_initializer)
             for val_step in range(NUM_VAL-1):
                 _, test_summary = sess.run([val_update_mean_iou, test_sum_op],
                 feed_dict=feed_dict)
             
+            summary_writer.add_summary(train_summary, step)
             summary_writer.add_summary(test_summary, step)
             val_mean_iou_float= sess.run(val_mean_iou)
 
