@@ -88,7 +88,7 @@ def main():
     raw_output = end_points['resnet_v1_{}/logits'.format(args.num_layers)]
     # Which variables to load. Running means and variances are not trainable,
     # thus all_variables() should be restored.
-    if args.imagenet is not None:
+    if args.imagenet is not None and args.ckpt == 0:
         restore_var = [v for v in tf.global_variables() if 
           ('aspp' not in v.name) and 
           ('img_pool' not in v.name) and 
@@ -99,6 +99,7 @@ def main():
           ('logits' not in v.name)]
     else:
         restore_var = [v for v in tf.global_variables()]
+        
     if args.freeze_bn:
         all_trainable = [v for v in tf.trainable_variables() if 'beta' not in 
             v.name and 'gamma' not in v.name]
