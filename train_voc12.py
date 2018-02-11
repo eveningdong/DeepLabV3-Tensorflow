@@ -228,7 +228,7 @@ def main():
 
         if step % args.save_pred_every == 0 and step > args.ckpt:
             sess.run(val_initializer)
-            for val_step in range(NUM_VAL-1):
+            for val_step in range(NUM_VAL):
                 _, test_summary = sess.run([val_update_mean_iou, test_sum_op],
                 feed_dict=feed_dict)
             
