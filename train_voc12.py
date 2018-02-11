@@ -139,8 +139,7 @@ def main():
     # Define loss and optimisation parameters.
     base_lr = tf.constant(args.learning_rate)
     step_ph = tf.placeholder(dtype=tf.float32, shape=())
-    # learning_rate = tf.scalar_mul(base_lr, 
-    #    tf.pow((1 - step_ph / args.num_steps), args.power))
+    learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
     learning_rate = base_lr
     lr_sum = tf.summary.scalar('params/learning_rate', learning_rate)
 
