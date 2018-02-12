@@ -50,13 +50,16 @@ I continued training with learning rate 0.0001, there is a huge increase on vali
 ### Updated 2/05/2018
 There was an improvement on the implementation of Multi-grid, thanks @howard-mahe. The new validation results should be updated soon.
 
+### Updated 2/11/2018
+The new validation result was trained from scratch. I didn't implement the two stage training policy (fixing BN and stride 16 -> 8). I may try few more runs to see if there is an improvement on the performance, but I think it is a fine-tuning work.
+
 | mIOU      | Validation       |
 | --------- |:----------------:|
 | paper     | 77.21%           | 
-| repo      |                  |
+| repo      | 70.63%           |
 
 The validation mIOU for this repo is achieved without multi-scale and left-right flippling.
 
-The improvement can be also achieved by finetuning on hyperparameters such as **learning rate**, **batch size**, **optimizer**, **initializer** and **batch normalization**. I didn't spend too much time on training and the results are temporary. 
+The improvement can be achieved by finetuning on hyperparameters such as **learning rate**, **batch size**, **optimizer**, **initializer** and **batch normalization**. I didn't spend too much time on training and the results are temporary. 
 
 *Welcome to try and report your numbers.*
